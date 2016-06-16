@@ -13083,6 +13083,7 @@ int ash_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int ash_main(int argc UNUSED_PARAM, char **argv)
 {
 	const char *shinit;
+	const char *hp;
 	volatile smallint state;
 	struct jmploc jmploc;
 	struct stackmark smark;
@@ -13143,22 +13144,13 @@ int ash_main(int argc UNUSED_PARAM, char **argv)
 	setstackmark(&smark);
 	procargs(argv);
 
-	if (argv[0] && argv[0][0] == '-')
-		isloginsh = 1;
-	if (isloginsh) {
-		const char *hp;
-
-		state = 1;
-		read_profile("/etc/profile");
+	isloginsh = 1;
+	state = 1;
+	read_profile("/system/etc/profile");
  state1:
-		state = 2;
-		hp = lookupvar("HOME");
-		if (hp) {
-			hp = concat_path_file(hp, ".profile");
-			read_profile(hp);
-			free((char*)hp);
-		}
-	}
+	state = 2;
+	if (!hp)
+		setvar("HISTFILE", "/data/ash_history", 0);
  state2:
 	state = 3;
 	if (
@@ -13188,15 +13180,10 @@ int ash_main(int argc UNUSED_PARAM, char **argv)
 	if (sflag || minusc == NULL) {
 #if MAX_HISTORY > 0 && ENABLE_FEATURE_EDITING_SAVEHISTORY
 		if (iflag) {
-			const char *hp = lookupvar("HISTFILE");
+			hp = lookupvar("HISTFILE");
 			if (!hp) {
-				hp = lookupvar("HOME");
-				if (hp) {
-					hp = concat_path_file(hp, ".ash_history");
-					setvar0("HISTFILE", hp);
-					free((char*)hp);
-					hp = lookupvar("HISTFILE");
-				}
+				setvar("HISTFILE", "/data/ash_history", 0);
+				hp = lookupvar("HISTFILE");
 			}
 			if (hp)
 				line_input_state->hist_file = hp;
