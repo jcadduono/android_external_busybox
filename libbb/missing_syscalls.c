@@ -40,6 +40,11 @@ int pivot_root(const char *new_root, const char *put_old)
 	return syscall(__NR_pivot_root, new_root, put_old);
 }
 
+ssize_t readahead(int fd, off64_t offset, size_t count)
+{
+	return syscall(__NR_readahead, fd, offset, count);
+}
+
 int tcdrain(int fd)
 {
 	return ioctl(fd, TCSBRK, 1);

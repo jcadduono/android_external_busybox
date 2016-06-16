@@ -30,6 +30,13 @@ typedef struct {
 
 #define UL unsigned long
 
+#ifdef __ANDROID__
+static pid_t wait3(int* status, int options, struct rusage* rusage)
+{
+	return wait4(-1, status, options, rusage);
+}
+#endif
+
 static const char default_format[] ALIGN1 = "real\t%E\nuser\t%u\nsys\t%T";
 
 /* The output format for the -p option .*/
