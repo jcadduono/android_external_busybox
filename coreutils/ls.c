@@ -328,7 +328,7 @@ struct dnode {
 //
 	/* Same names as in struct stat, but with dn_ instead of st_ pfx: */
 	mode_t    dn_mode; /* obtained with lstat OR stat, depending on -L etc */
-	off_t     dn_size;
+	loff_t     dn_size;
 #if ENABLE_FEATURE_LS_TIMESTAMPS || ENABLE_FEATURE_LS_SORTFILES
 	time_t    dn_atime;
 	time_t    dn_mtime;
@@ -522,7 +522,7 @@ static NOINLINE unsigned display_single(const struct dnode *dn)
 		column += printf("%7llu ", (long long) dn->dn_ino);
 //TODO: -h should affect -s too:
 	if (G.all_fmt & LIST_BLOCKS)
-		column += printf("%6"OFF_FMT"u ", (off_t) (dn->dn_blocks >> 1));
+		column += printf("%6"OFF_FMT"u ", (loff_t) (dn->dn_blocks >> 1));
 	if (G.all_fmt & LIST_MODEBITS)
 		column += printf("%-10s ", (char *) bb_mode_string(dn->dn_mode));
 	if (G.all_fmt & LIST_NLINKS)
@@ -1003,7 +1003,7 @@ static struct dnode **scan_one_dir(const char *path, unsigned *nfiles_p)
  * number of units.
  */
 /* by Jorgen Overgaard (jorgen AT antistaten.se) */
-static off_t calculate_blocks(struct dnode **dn)
+static loff_t calculate_blocks(struct dnode **dn)
 {
 	uoff_t blocks = 1;
 	if (dn) {

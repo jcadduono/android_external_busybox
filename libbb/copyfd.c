@@ -27,10 +27,10 @@
  * size < 0 means "ignore write errors", used by tar --to-command
  * size = 0 means "copy till EOF"
  */
-static off_t bb_full_fd_action(int src_fd, int dst_fd, off_t size)
+static loff_t bb_full_fd_action(int src_fd, int dst_fd, loff_t size)
 {
 	int status = -1;
-	off_t total = 0;
+	loff_t total = 0;
 	bool continue_on_write_error = 0;
 	ssize_t sendfile_sz;
 #if CONFIG_FEATURE_COPYBUF_KB > 4
@@ -135,7 +135,7 @@ void FAST_FUNC complain_copyfd_and_die(off_t sz)
 }
 #endif
 
-off_t FAST_FUNC bb_copyfd_size(int fd1, int fd2, off_t size)
+loff_t FAST_FUNC bb_copyfd_size(int fd1, int fd2, loff_t size)
 {
 	if (size) {
 		return bb_full_fd_action(fd1, fd2, size);
@@ -143,9 +143,9 @@ off_t FAST_FUNC bb_copyfd_size(int fd1, int fd2, off_t size)
 	return 0;
 }
 
-void FAST_FUNC bb_copyfd_exact_size(int fd1, int fd2, off_t size)
+void FAST_FUNC bb_copyfd_exact_size(int fd1, int fd2, loff_t size)
 {
-	off_t sz = bb_copyfd_size(fd1, fd2, size);
+	loff_t sz = bb_copyfd_size(fd1, fd2, size);
 	if (sz == (size >= 0 ? size : -size))
 		return;
 	if (sz != -1)
@@ -154,7 +154,7 @@ void FAST_FUNC bb_copyfd_exact_size(int fd1, int fd2, off_t size)
 	xfunc_die();
 }
 
-off_t FAST_FUNC bb_copyfd_eof(int fd1, int fd2)
+loff_t FAST_FUNC bb_copyfd_eof(int fd1, int fd2)
 {
 	return bb_full_fd_action(fd1, fd2, 0);
 }

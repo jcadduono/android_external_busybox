@@ -182,10 +182,10 @@ static const char wget_user_headers[] ALIGN1 =
 
 /* Globals */
 struct globals {
-	off_t content_len;        /* Content-length of the file */
-	off_t beg_range;          /* Range at which continue begins */
+	loff_t content_len;        /* Content-length of the file */
+	loff_t beg_range;          /* Range at which continue begins */
 #if ENABLE_FEATURE_WGET_STATUSBAR
-	off_t transferred;        /* Number of bytes transferred so far */
+	loff_t transferred;        /* Number of bytes transferred so far */
 	const char *curfile;      /* Name of current file being transferred */
 	bb_progress_t pmt;
 #endif
@@ -753,7 +753,7 @@ static void NOINLINE retrieve_file_data(FILE *dfp)
 			errno = 0;
 			rdsz = sizeof(G.wget_buf);
 			if (G.got_clen) {
-				if (G.content_len < (off_t)sizeof(G.wget_buf)) {
+				if (G.content_len < (loff_t)sizeof(G.wget_buf)) {
 					if ((int)G.content_len <= 0)
 						break;
 					rdsz = (unsigned)G.content_len;
@@ -845,8 +845,8 @@ static void NOINLINE retrieve_file_data(FILE *dfp)
 	 * failed to restart *without* losing the almost complete file.
 	 */
 	{
-		off_t pos = lseek(G.output_fd, 0, SEEK_CUR);
-		if (pos != (off_t)-1)
+		loff_t pos = lseek(G.output_fd, 0, SEEK_CUR);
+		if (pos != (loff_t)-1)
 			ftruncate(G.output_fd, pos);
 	}
 

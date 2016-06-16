@@ -28,7 +28,7 @@ int strings_main(int argc UNUSED_PARAM, char **argv)
 {
 	int n, c, status = EXIT_SUCCESS;
 	unsigned count;
-	off_t offset;
+	loff_t offset;
 	FILE *file;
 	char *string;
 	const char *fmt = "%s: ";

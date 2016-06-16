@@ -122,8 +122,8 @@ struct globals {
 	char block_buf[516];
 	char block_buf_tail[1];
 #if ENABLE_FEATURE_TFTP_PROGRESS_BAR
-	off_t pos;
-	off_t size;
+	loff_t pos;
+	loff_t size;
 	const char *file;
 	bb_progress_t pmt;
 #endif
@@ -392,7 +392,7 @@ static int tftp_protocol(
 			goto send_pkt;
 
 		/* Need to add option to pkt */
-		if ((&xbuf[io_bufsize - 1] - cp) < sizeof("blksize NNNNN tsize ") + sizeof(off_t)*3) {
+		if ((&xbuf[io_bufsize - 1] - cp) < sizeof("blksize NNNNN tsize ") + sizeof(loff_t)*3) {
 			bb_error_msg("remote filename is too long");
 			goto ret;
 		}
@@ -420,7 +420,7 @@ static int tftp_protocol(
 			cp += sizeof("tsize");
 			st.st_size = 0;
 			fstat(local_fd, &st);
-			cp += sprintf(cp, "%"OFF_FMT"u", (off_t)st.st_size) + 1;
+			cp += sprintf(cp, "%"OFF_FMT"u", (loff_t)st.st_size) + 1;
 # if ENABLE_FEATURE_TFTP_PROGRESS_BAR
 			/* Save for progress bar. If 0 (tftp downloading),
 			 * we look at server's reply later */

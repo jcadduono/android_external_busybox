@@ -181,9 +181,9 @@ char* FAST_FUNC hex2bin(char *dst, const char *str, int count)
 
 /* Return how long the file at fd is, if there's any way to determine it. */
 #ifdef UNUSED
-off_t FAST_FUNC fdlength(int fd)
+loff_t FAST_FUNC fdlength(int fd)
 {
-	off_t bottom = 0, top = 0, pos;
+	loff_t bottom = 0, top = 0, pos;
 	long size;
 
 	// If the ioctl works for this, return it.

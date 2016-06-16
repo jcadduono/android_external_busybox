@@ -20,6 +20,10 @@
  * xfunc_printf.c contains those which do.
  */
 
+#ifndef _LARGEFILE64_SOURCE
+/* For lseek64 */
+# define _LARGEFILE64_SOURCE
+#endif
 #include "libbb.h"
 
 
@@ -251,13 +255,13 @@ void FAST_FUNC xclose(int fd)
 }
 
 // Die with an error message if we can't lseek to the right spot.
-off_t FAST_FUNC xlseek(int fd, off_t offset, int whence)
+loff_t FAST_FUNC xlseek(int fd, loff_t offset, int whence)
 {
-	off_t off = lseek(fd, offset, whence);
-	if (off == (off_t)-1) {
+	loff_t off = lseek64(fd, offset, whence);
+	if (off == (loff_t)-1) {
 		if (whence == SEEK_SET)
-			bb_perror_msg_and_die("lseek(%"OFF_FMT"u)", offset);
-		bb_perror_msg_and_die("lseek");
+			bb_perror_msg_and_die("lseek64(%"OFF_FMT"u)", offset);
+		bb_perror_msg_and_die("lseek64");
 	}
 	return off;
 }

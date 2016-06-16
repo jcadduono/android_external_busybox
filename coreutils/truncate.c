@@ -43,7 +43,7 @@ int truncate_main(int argc UNUSED_PARAM, char **argv)
 	int flags = O_RDWR;
 	int ret = EXIT_SUCCESS;
 	char *size_str;
-	off_t size;
+	loff_t size;
 
 	enum {
 		OPT_NOCREATE  = (1 << 0),

@@ -21,7 +21,7 @@ int cksum_main(int argc UNUSED_PARAM, char **argv)
 {
 	uint32_t *crc32_table = crc32_filltable(NULL, 1);
 	uint32_t crc;
-	off_t length, filesize;
+	loff_t length, filesize;
 	int bytes_read;
 	int exit_code = EXIT_SUCCESS;
 

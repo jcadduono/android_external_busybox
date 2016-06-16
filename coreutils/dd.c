@@ -89,6 +89,10 @@
 //usage:       "4+0 records in\n"
 //usage:       "4+0 records out\n"
 
+#ifndef _LARGEFILE64_SOURCE
+/* For lseek64 */
+# define _LARGEFILE64_SOURCE
+#endif
 #include "libbb.h"
 
 /* This is a NOEXEC applet. Be very careful! */
@@ -100,7 +104,7 @@ enum {
 };
 
 struct globals {
-	off_t out_full, out_part, in_full, in_part;
+	loff_t out_full, out_part, in_full, in_part;
 #if ENABLE_FEATURE_DD_THIRD_STATUS_LINE
 	unsigned long long total_bytes;
 	unsigned long long begin_time_us;
@@ -268,8 +272,8 @@ int dd_main(int argc UNUSED_PARAM, char **argv)
 	struct {
 		size_t oc;
 		ssize_t prev_read_size; /* for detecting swab failure */
-		off_t count;
-		off_t seek, skip;
+		loff_t count;
+		loff_t seek, skip;
 		const char *infile, *outfile;
 	} Z;
 #define oc      (Z.oc     )
@@ -421,7 +425,7 @@ int dd_main(int argc UNUSED_PARAM, char **argv)
 		outfile = bb_msg_standard_output;
 	}
 	if (skip) {
-		if (lseek(ifd, skip * ibs, SEEK_CUR) < 0) {
+		if (lseek64(ifd, skip * ibs, SEEK_CUR) < 0) {
 			do {
 				ssize_t n = safe_read(ifd, ibuf, ibs);
 				if (n < 0)
@@ -432,7 +436,7 @@ int dd_main(int argc UNUSED_PARAM, char **argv)
 		}
 	}
 	if (seek) {
-		if (lseek(ofd, seek * obs, SEEK_CUR) < 0)
+		if (lseek64(ofd, seek * obs, SEEK_CUR) < 0)
 			goto die_outfile;
 	}
 

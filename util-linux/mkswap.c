@@ -89,7 +89,7 @@ int mkswap_main(int argc UNUSED_PARAM, char **argv)
 {
 	int fd;
 	unsigned pagesize;
-	off_t len;
+	loff_t len;
 	const char *label = "";
 
 	opt_complementary = "-1"; /* at least one param */
