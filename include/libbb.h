@@ -64,6 +64,16 @@
 #if defined(ANDROID) || defined(__ANDROID__)
 # define endpwent() ((void)0)
 # define endgrent() ((void)0)
+struct timex;
+pid_t getsid(pid_t pid);
+int stime(const time_t *t);
+int sethostname(const char *name, size_t len);
+int adjtimex(struct timex *buf);
+int pivot_root(const char *new_root, const char *put_old);
+ssize_t readahead(int fd, off64_t offset, size_t count);
+# include <mntent.h>
+int addmntent (FILE *stream, const struct mntent *mnt);
+char *hasmntopt (const struct mntent *mnt, const char *opt);
 #endif
 #ifdef HAVE_MNTENT_H
 # include <mntent.h>
@@ -80,8 +90,6 @@
 #if ENABLE_SELINUX
 # include <selinux/selinux.h>
 # include <selinux/context.h>
-# include <selinux/flask.h>
-# include <selinux/av_permissions.h>
 #endif
 #if ENABLE_FEATURE_UTMP
 # if defined __UCLIBC__ && ( \
@@ -272,12 +280,6 @@ typedef unsigned long uoff_t;
 #endif
 /* scary. better ideas? (but do *test* them first!) */
 #define OFF_T_MAX  ((off_t)~((off_t)1 << (sizeof(off_t)*8-1)))
-/* Users report bionic to use 32-bit off_t even if LARGEFILE support is requested.
- * We misdetected that. Don't let it build:
- */
-struct BUG_off_t_size_is_misdetected {
-	char BUG_off_t_size_is_misdetected[sizeof(off_t) == sizeof(uoff_t) ? 1 : -1];
-};
 
 /* Some useful definitions */
 #undef FALSE
@@ -389,12 +391,12 @@ extern int get_console_fd_or_die(void) FAST_FUNC;
 extern void console_make_active(int fd, const int vt_num) FAST_FUNC;
 extern char *find_block_device(const char *path) FAST_FUNC;
 /* bb_copyfd_XX print read/write errors and return -1 if they occur */
-extern off_t bb_copyfd_eof(int fd1, int fd2) FAST_FUNC;
-extern off_t bb_copyfd_size(int fd1, int fd2, off_t size) FAST_FUNC;
-extern void bb_copyfd_exact_size(int fd1, int fd2, off_t size) FAST_FUNC;
+extern loff_t bb_copyfd_eof(int fd1, int fd2) FAST_FUNC;
+extern loff_t bb_copyfd_size(int fd1, int fd2, loff_t size) FAST_FUNC;
+extern void bb_copyfd_exact_size(int fd1, int fd2, loff_t size) FAST_FUNC;
 /* "short" copy can be detected by return value < size */
 /* this helper yells "short read!" if param is not -1 */
-extern void complain_copyfd_and_die(off_t sz) NORETURN FAST_FUNC;
+extern void complain_copyfd_and_die(loff_t sz) NORETURN FAST_FUNC;
 
 extern char bb_process_escape_sequence(const char **ptr) FAST_FUNC;
 char* strcpy_and_process_escape_sequences(char *dst, const char *src) FAST_FUNC;
@@ -508,9 +510,9 @@ int open_or_warn_stdin(const char *pathname) FAST_FUNC;
 int xopen_stdin(const char *pathname) FAST_FUNC;
 void xrename(const char *oldpath, const char *newpath) FAST_FUNC;
 int rename_or_warn(const char *oldpath, const char *newpath) FAST_FUNC;
-off_t xlseek(int fd, off_t offset, int whence) FAST_FUNC;
+loff_t xlseek(int fd, loff_t offset, int whence) FAST_FUNC;
 int xmkstemp(char *template) FAST_FUNC;
-off_t fdlength(int fd) FAST_FUNC;
+loff_t fdlength(int fd) FAST_FUNC;
 
 uoff_t FAST_FUNC get_volume_size_in_bytes(int fd,
 		const char *override,
@@ -1844,7 +1846,7 @@ extern struct globals *const ptr_to_globals;
  * use bb_default_login_shell and following defines.
  * If you change LIBBB_DEFAULT_LOGIN_SHELL,
  * don't forget to change increment constant. */
-#define LIBBB_DEFAULT_LOGIN_SHELL  "-/bin/sh"
+#define LIBBB_DEFAULT_LOGIN_SHELL  "-/sbin/sh"
 extern const char bb_default_login_shell[] ALIGN1;
 /* "/bin/sh" */
 #define DEFAULT_SHELL              (bb_default_login_shell+1)
